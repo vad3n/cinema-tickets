@@ -6,6 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Configuration
 public class DBBeans {
@@ -14,7 +17,7 @@ public class DBBeans {
     public DataSource dataSource() {
         return DataSourceBuilder
                 .create()
-                .type(SingleConnectionDataSource::class)
+                .type(SingleConnectionDataSource.class)
                 .build();
     }
 

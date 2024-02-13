@@ -1,12 +1,16 @@
 package cinema.tickets.repositories.mysql;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 
-import javax.swing.plaf.basic.BasicComboBoxUI.KeyHandler;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import cinema.tickets.repositories.MovieRepository;
 import cinema.tickets.repositories.models.MovieDAO;
@@ -31,13 +35,13 @@ public class MySqlMovieRepository implements MovieRepository{
 
     @Override
     public MovieDAO getMovie(int id) {
-        return jdbc.queryForObject(GET_MOVIE,
+        return jdbc.queryForObject(Queries.GET_MOVIE,
                 (rs, rowNum) -> fromResultSet(rs), id);        
     }
 
     @Override
     public List<MovieDAO> getMovies() {
-        return jdbc.query(GET_MOVIES,
+        return jdbc.query(Queries.GET_MOVIES,
                 (rs, rowNum) -> fromResultSet(rs));
     }
 
@@ -46,20 +50,20 @@ public class MySqlMovieRepository implements MovieRepository{
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbc.update(con -> {
-            PreparedStatement ps = con.prapareStatement(INSERT_MOVIE, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = con.prepareStatement(Queries.INSERT_MOVIE, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, title);
             ps.setString(2, description);
             ps.setString(3, imageUrl);
             return ps;
         }, keyHolder);
 
-        Integer id = Objects.requireNonNull(keyHolder.getKey()).initValue();
+        Integer id = Objects.requireNonNull(keyHolder.getKey()).intValue();
         return new MovieDAO(id, title, description, imageUrl);
     }
 
     @Override
     public MovieDAO updateMovie(int id, String title, String description, String imageUrl) {
-        jdbc.update(UPDATE_MOVIE, title, description, imageUrl, id);
+        jdbc.update(Queries.UPDATE_MOVIE, title, description, imageUrl, id);
 
         return getMovie(id);
     }
@@ -67,9 +71,9 @@ public class MySqlMovieRepository implements MovieRepository{
     @Override
     public void deleteMovie(int id) {
         txTemplate.execute(status -> {
-            jdbc.update(DELETE_MOVIE, id);
+            jdbc.update(Queries.DELETE_MOVIE, id);
             return null;
-        })
+        });
     }
     
     static class Queries {

@@ -35,7 +35,7 @@ public class TicketController {
     }
 
     @PostMapping
-    public Ticket createTicket(TicketInput ticketInput) {
+    public Ticket createTicket(@RequestBody TicketInput ticketInput) {
         return ticketService.createTicket(ticketInput.userId, ticketInput.projectionId);
     }
 

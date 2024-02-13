@@ -1,9 +1,16 @@
 package cinema.tickets.repositories.mysql;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import cinema.tickets.repositories.UserRepository;
 import cinema.tickets.repositories.models.UserDAO;
@@ -12,7 +19,7 @@ public class MySqlUserRepository implements UserRepository{
     private final TransactionTemplate txTemplate;
     private final JdbcTemplate jdbc;
 
-    public MySqlMovieRepository(TransactionTemplate txTemplate, JdbcTemplate jdbc) {
+    public MySqlUserRepository(TransactionTemplate txTemplate, JdbcTemplate jdbc) {
         this.txTemplate = txTemplate;
         this.jdbc = jdbc;
     }
@@ -28,13 +35,13 @@ public class MySqlUserRepository implements UserRepository{
 
     @Override
     public UserDAO getUser(int id) {
-        return jdbc.queryForObject(GET_USER,
+        return jdbc.queryForObject(Queries.GET_USER,
                 (rs, rowNum) -> fromResultSet(rs), id);
     }
 
     @Override
     public List<UserDAO> getUsers() {
-        return jdbc.query(GET_USERS,
+        return jdbc.query(Queries.GET_USERS,
                 (rs, rowNum) -> fromResultSet(rs));
     }
 
@@ -43,23 +50,23 @@ public class MySqlUserRepository implements UserRepository{
         KeyHolder keyHolder = new GeneratedKeyHolder();
         
         jdbc.update(con -> {
-            PreparedStatement ps = con.prapareStatement(INSERT_USER, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = con.prepareStatement(Queries.INSERT_USER, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, username);
             ps.setString(2, password);
             ps.setString(3, email);
             return ps;
         }, keyHolder);
 
-        Integer id = Objects.requireNonNull(keyHolder.getKey()).initValue();
+        Integer id = Objects.requireNonNull(keyHolder.getKey()).intValue();
         return new UserDAO(id, username, password, email);
     }
 
     @Override
     public void deleteUser(int id) {
         txTemplate.execute(status -> {
-            jdbc.update(DELETE_USER, id);
+            jdbc.update(Queries.DELETE_USER, id);
             return null;
-        })
+        });
     }
 
     static class Queries {
