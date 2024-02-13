@@ -44,9 +44,9 @@ public class MySqlUserRepository implements UserRepository{
         
         jdbc.update(con -> {
             PreparedStatement ps = con.prapareStatement(INSERT_USER, Statement.RETURN_GENERATED_KEYS);
-            ps.getString(1, username);
-            ps.getString(2, password);
-            ps.getString(3, email);
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ps.setString(3, email);
             return ps;
         }, keyHolder);
 

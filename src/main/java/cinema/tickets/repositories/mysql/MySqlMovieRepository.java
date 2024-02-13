@@ -47,9 +47,9 @@ public class MySqlMovieRepository implements MovieRepository{
 
         jdbc.update(con -> {
             PreparedStatement ps = con.prapareStatement(INSERT_MOVIE, Statement.RETURN_GENERATED_KEYS);
-            ps.getString(1, title);
-            ps.getString(2, description);
-            ps.getString(3, imageUrl);
+            ps.setString(1, title);
+            ps.setString(2, description);
+            ps.setString(3, imageUrl);
             return ps;
         }, keyHolder);
 
