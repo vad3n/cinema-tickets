@@ -8,8 +8,6 @@ import cinema.tickets.web.api.models.MovieInput;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +35,7 @@ public class MovieController {
         return movieService.getMovies();
     }
 
-    @PostMapping()
+    @PostMapping
     public Movie createMovie(@RequestBody MovieInput movieInput) {
         return movieService.createMovie(movieInput.title, movieInput.description, movieInput.imageUrl);
     }

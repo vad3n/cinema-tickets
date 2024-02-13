@@ -38,7 +38,7 @@ public class MySqlMovieRepository implements MovieRepository{
     @Override
     public List<MovieDAO> getMovies() {
         return jdbc.query(GET_MOVIES,
-                (rs, rowNum) -> fromResultSet);
+                (rs, rowNum) -> fromResultSet(rs));
     }
 
     @Override
@@ -47,8 +47,8 @@ public class MySqlMovieRepository implements MovieRepository{
 
         jdbc.update(con -> {
             PreparedStatement ps = con.prapareStatement(INSERT_MOVIE, Statement.RETURN_GENERATED_KEYS);
-            ps.getString(1, title),
-            ps.getString(2, description),
+            ps.getString(1, title);
+            ps.getString(2, description);
             ps.getString(3, imageUrl);
             return ps;
         }, keyHolder);
